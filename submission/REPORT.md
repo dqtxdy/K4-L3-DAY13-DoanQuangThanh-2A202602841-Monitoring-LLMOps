@@ -1,6 +1,6 @@
 # Báo cáo cá nhân — K4-L3B Day 13 Monitoring & LLMOps
 
-> Runtime verification có thật được lưu trong `evidence/`. Official challenge đã chạy và được điều tra; screenshot UI riêng cho metric/log/trace incident còn cần lưu thành PNG.
+> Runtime verification có thật được lưu trong `evidence/`. Official challenge đã chạy và được điều tra; ảnh incident 12–14 đã lưu.
 
 ## 1. Thông tin học viên
 
@@ -29,20 +29,20 @@ Các file text/JSON dưới đây là output runtime/API thật. Screenshot là 
 | Prompt versions | [`evidence/09-prompt-versions.txt`](evidence/09-prompt-versions.txt), `09-prompt-versions.png` (ảnh chụp mới, hiển thị v1/v2 và project title) |
 | Prompt rollback | [`evidence/10-prompt-rollback.txt`](evidence/10-prompt-rollback.txt); `10-prompt-rollback-before.png` (v2 production), `10-prompt-rollback-after.png` (rollback về v1) |
 | Dashboard runtime | [`evidence/11-dashboard-runtime.txt`](evidence/11-dashboard-runtime.txt), `11-dashboard-overview.png` |
-| Incident metric | [`evidence/12-incident-metric.txt`](evidence/12-incident-metric.txt); screenshot dashboard cần lưu thành `12-incident-metric.png` |
-| Incident log | [`evidence/13-incident-log.jsonl`](evidence/13-incident-log.jsonl); screenshot runtime log cần lưu thành `13-incident-log.png` |
-| Incident trace | [`evidence/14-incident-trace.txt`](evidence/14-incident-trace.txt); screenshot Langfuse cần lưu thành `14-incident-trace.png` |
+| Incident metric | [`evidence/12-incident-metric.txt`](evidence/12-incident-metric.txt); [`evidence/12-incident-metric.png`](evidence/12-incident-metric.png) |
+| Incident log | [`evidence/13-incident-log.jsonl`](evidence/13-incident-log.jsonl); [`evidence/13-incident-log.png`](evidence/13-incident-log.png) (mở ảnh ở độ phân giải gốc để đọc JSON) |
+| Incident trace | [`evidence/14-incident-trace.txt`](evidence/14-incident-trace.txt); [`evidence/14-incident-trace.png`](evidence/14-incident-trace.png) (giá trị public key đã che) |
 | Recovery | [`evidence/15-incident-recovery.txt`](evidence/15-incident-recovery.txt) |
 
 ## 3. Kết quả kỹ thuật
 
 | Nội dung | Baseline thực tế | Kết quả cuối hiện có | Nhận xét |
 |---|---|---|---|
-| `validate_logs.py` | Exit 1: `data/logs.jsonl` not found | 100/100; 89 records, 44 unique correlation IDs | `evidence/02-log-validator.txt` |
+| `validate_logs.py` | Exit 1: `data/logs.jsonl` not found | 100/100; 64 records, 32 unique correlation IDs | `evidence/02-log-validator.txt` |
 | `validate_dashboard.py` | 6/6 | 6/6 | `evidence/03-dashboard-validator.txt` |
 | `pytest` | Collection error: dependencies missing | 26 passed after the incident concurrency fix | [`evidence/01-pytest.txt`](evidence/01-pytest.txt) |
 | Số traces | Chưa có | 24 root traces; 24 đủ root/retrieval/generation; 14 managed-prompt traces | Langfuse Observations API v2; evidence 06–08 |
-| Số PII leak | Chưa có runtime log | 0/89 runtime records | `evidence/05-pii-redaction.txt` |
+| Số PII leak | Chưa có runtime log | 0/64 runtime records in final validation | `evidence/05-pii-redaction.txt` |
 | Latency P95 / TTFT P95 | Chưa có | 489 ms / 50 ms trong cửa sổ 60 phút | `evidence/11-dashboard-runtime.txt` |
 | Retrieval success rate | Chưa có | 100% (44/44 response thành công) | Runtime logs |
 
@@ -51,7 +51,7 @@ Các file text/JSON dưới đây là output runtime/API thật. Screenshot là 
 - **Cách tạo/nhận và truyền correlation ID:** middleware nhận `x-request-id` nếu chỉ chứa ký tự an toàn và dài tối đa 128; nếu thiếu/không hợp lệ, sinh `req-<8 hex>`. ID được bind bằng structlog contextvars, trả qua `x-request-id`; `x-response-time-ms` trả thời gian middleware. Context được clear ở đầu/cuối request.
 - **Các metadata được ghi vào structured log:** `user_id_hash` (SHA-256 rút gọn), `session_id`, `feature`, `model`, `env`, cùng event, correlation ID, latency/TTFT, token, cost, quality và retrieval status theo event.
 - **Cách bảo đảm PII được scrub trước khi ghi:** processor đệ quy chạy sau format exception, trước `JsonlFileProcessor` và JSON renderer. Redaction áp dụng trên mọi string trong dict/list/tuple, gồm payload và lỗi.
-- **Cách kiểm chứng kết quả:** Full suite 26 passed after the incident fix (`evidence/01-pytest.txt`). Validator không phát hiện PII trong 89 runtime records; canary email/card được redacted trong log. Runtime samples nằm ở evidence 04/05.
+- **Cách kiểm chứng kết quả:** Full suite 26 passed after the incident fix (`evidence/01-pytest.txt`). Final validator không phát hiện PII trong 64 runtime records; canary email/card được redacted trong log. Runtime samples nằm ở evidence 04/05.
 
 ## 5. Tracing và prompt versioning
 
@@ -103,5 +103,6 @@ Investigation evidence giữ riêng metric → log → trace cho cùng request; 
 - [x] Đổi tên project Langfuse theo format cá nhân.
 - [x] Lưu screenshot dashboard và Langfuse theo `docs/SUBMISSION.md` (ảnh 04 nên chụp rõ hơn nếu có thể).
 - [x] Điều tra official challenge theo metric → log → trace; challenge gốc vẫn ignored và không được commit.
-- [ ] Chụp screenshot PNG 12–14 từ dashboard, structured log và project Langfuse cá nhân.
-- [ ] Kiểm tra không có secret, PII thô hoặc artifact không cần thiết.
+- [x] Lưu screenshot incident metric (12) và trace (14); giá trị public key trong ảnh 14 đã được che.
+- [x] Lưu incident log (13); mở ảnh ở độ phân giải gốc để đọc JSON.
+- [x] Kiểm tra không có secret, PII thô hoặc artifact không cần thiết.

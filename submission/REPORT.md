@@ -21,7 +21,7 @@
 | Pytest cuối | [`evidence/01-pytest.txt`](evidence/01-pytest.txt) |
 | Log validator | [`evidence/02-log-validator.txt`](evidence/02-log-validator.txt) |
 | Dashboard validator | [`evidence/03-dashboard-validator.txt`](evidence/03-dashboard-validator.txt) |
-| Structured log | [`evidence/04-structured-log.png`](evidence/04-structured-log.png), [`evidence/04-structured-log.jsonl`](evidence/04-structured-log.jsonl) |
+| Structured log | [`evidence/04-structured-log.png`](evidence/04-structured-log.png) |
 | PII redaction | [`evidence/05-pii-redaction.png`](evidence/05-pii-redaction.png), [`evidence/05-pii-redaction.txt`](evidence/05-pii-redaction.txt) |
 | Trace list | [`evidence/06-trace-list.png`](evidence/06-trace-list.png) |
 | Trace waterfall | [`evidence/07-trace-waterfall.png`](evidence/07-trace-waterfall.png) |
@@ -30,7 +30,7 @@
 | Prompt rollback | [`evidence/10-prompt-rollback-before.png`](evidence/10-prompt-rollback-before.png), [`evidence/10-prompt-rollback-after.png`](evidence/10-prompt-rollback-after.png) |
 | Dashboard runtime | [`evidence/11-dashboard-overview.png`](evidence/11-dashboard-overview.png) |
 | Incident metric | [`evidence/12-incident-metric.png`](evidence/12-incident-metric.png), [`evidence/12-incident-metric.txt`](evidence/12-incident-metric.txt) |
-| Incident log | [`evidence/13-incident-log.png`](evidence/13-incident-log.png), [`evidence/13-incident-log.jsonl`](evidence/13-incident-log.jsonl) |
+| Incident log | [`evidence/13-incident-log.png`](evidence/13-incident-log.png) |
 | Incident trace | [`evidence/14-incident-trace.png`](evidence/14-incident-trace.png), [`evidence/14-incident-trace.txt`](evidence/14-incident-trace.txt) |
 
 ## 3. Kết quả kỹ thuật
@@ -77,7 +77,7 @@
 - **Challenge ID:** `day13-k4-l3b-monitoring-llmops-v1`
 - **Khoảng thời gian điều tra:** 2026-09-30T05:13:51.180652+00:00 đến 2026-09-30T05:14:04.957257+00:00.
 - **Triệu chứng từ metrics:** 5/5 response vượt ngưỡng challenge 2000 ms; P50 2652 ms, P95/P99 3067 ms; TTFT P95 50 ms, error rate 0%.
-- **Log line và correlation ID liên quan:** event `response_sent`, `correlation_id=req-68327b43`, `latency_ms=3067`, `tool_success=true` trong `evidence/13-incident-log.jsonl`.
+- **Log line và correlation ID liên quan:** event `response_sent`, `correlation_id=req-68327b43`, `latency_ms=3067`, `tool_success=true` trong `evidence/13-incident-log.png`.
 - **Trace ID và span gây ảnh hưởng:** trace `9df0c93f6219d8ee11b7247068523f44`; retrieval span `86c806cd0cb4c5f2` mất 2.501 s, generation span `039f37f9feffb8e7` mất 0.150 s. Cùng correlation ID `req-68327b43`.
 - **Root cause:** incident `rag_slow` làm retrieval chờ 2.5 s; lời gọi đồng bộ `run()` chặn event loop ở route async, tuần tự hóa 5 request concurrent.
 - **Fix action:** tắt incident bằng `python scripts/inject_incident.py --disable` và dispatch hàm đồng bộ `run()` qua `run_in_threadpool()`.
@@ -98,7 +98,7 @@
 ## 9. Checklist trước khi nộp
 
 - [ ] Kết quả và evidence thuộc commit SHA cuối.
-- [ ] Tất cả ảnh/output mở được bằng đường dẫn tương đối.
+- [x] Tất cả ảnh/output mở được bằng đường dẫn tương đối.
 - [x] Incident evidence nối đúng metric → log → trace.
 - [x] Trace/prompt evidence thuộc project Langfuse cá nhân và ảnh không lộ key/secret.
 - [x] Repository chạy lại được theo README.

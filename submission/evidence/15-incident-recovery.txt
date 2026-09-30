@@ -1,9 +1,0 @@
-Incident recovery evidence (runtime-derived)
-Mitigation: python scripts/inject_incident.py --disable; incident status verified false by GET /health.
-Regression fix: sync LabAgent.run is dispatched through Starlette run_in_threadpool from the async route.
-Verification workload: python scripts/load_test.py --concurrency 5 (normal repository sample workload; health reported tracing_enabled=false for this run).
-Client responses: 10/10 HTTP 200; wall latency min=156.6 ms, max=165.2 ms.
-API /metrics snapshot: {"avg_cost_usd": 0.0021, "error_breakdown": {}, "latency_p50": 151.0, "latency_p95": 153.0, "latency_p99": 153.0, "quality_avg": 0.88, "tokens_in_total": 676, "tokens_out_total": 2688, "total_cost_usd": 0.0423, "traffic": 20, "ttft_p95": 50.0}
-Compared with the official challenge snapshot, app P95 recovered from 3067 ms (5 requests over 2000 ms threshold) to 153 ms across the post-recovery process snapshot.
-Limit: this local recovery run verified the fake RAG path, not a real vector database or external model latency.
-Langfuse SDK shutdown emitted HTTP 401 while exporting spans; no post-recovery trace was claimed. Rotate/update credentials before enabling tracing again.

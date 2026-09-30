@@ -1,0 +1,3 @@
+Synthetic canary request from data/sample_queries.jsonl (email value intentionally omitted here). Runtime log output: {"service":"api","payload":{"message_preview":"What is your refund policy? My email is [REDACTED_EMAIL]"},"event":"request_received","feature":"qa","session_id":"s01","env":"dev","correlation_id":"req-784a6b2c","user_id_hash":"2055254ee30a","model":"claude-sonnet-4-5","level":"info","ts":"2026-09-30T02:37:07.758703Z"}
+Validator reported 0 potential PII leaks across 89 runtime log records.
+Langfuse Observations API v2 scan: 72 observations checked across input/output/metadata; raw email=0, phone_vn=0, CCCD=0, credit_card=0.

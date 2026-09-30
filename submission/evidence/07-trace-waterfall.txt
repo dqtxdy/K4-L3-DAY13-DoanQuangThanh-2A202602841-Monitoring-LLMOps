@@ -1,0 +1,6 @@
+Langfuse Observations API v2; project=day13-k4-l3b-2A202602841
+trace_id=64fd75aabb757f9c63c837baec12c2eb
+correlation_id=req-3831fed9
+root lab-agent-run [AGENT] observation_id=74e2d0bb6f4f7572
+  └─ generation [GENERATION] observation_id=62aae23b0859beea parent=74e2d0bb6f4f7572
+  └─ retrieval [RETRIEVER] observation_id=9cc644f6788ef628 parent=74e2d0bb6f4f7572

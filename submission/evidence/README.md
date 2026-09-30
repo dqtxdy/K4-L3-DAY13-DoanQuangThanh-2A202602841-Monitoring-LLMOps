@@ -14,7 +14,8 @@ Tên file gợi ý:
 07-trace-waterfall.png
 08-trace-metadata.png
 09-prompt-versions.png
-10-prompt-rollback.png
+10-prompt-rollback-before.png
+10-prompt-rollback-after.png
 11-dashboard-overview.png
 12-incident-metric.png
 13-incident-log.png
@@ -32,3 +33,25 @@ Từ `submission/REPORT.md`, dẫn ảnh bằng đường dẫn tương đối:
 ```
 
 Không commit secret, API key, PII thô hoặc evidence của học viên/lớp khác.
+
+## Runtime outputs captured
+
+The following files contain actual local test/log output or records queried from this repository's configured Langfuse project. They are text/data exports, not screenshots:
+
+```text
+01-pytest.txt
+02-log-validator.txt
+03-dashboard-validator.txt
+04-structured-log.jsonl
+05-pii-redaction.txt
+06-trace-list.txt
+07-trace-waterfall.txt
+08-trace-metadata.txt
+09-prompt-versions.txt
+10-prompt-rollback.txt
+11-dashboard-runtime.txt
+```
+
+Screenshots currently present: `04-structured-log.png`, `05-pii-redaction.png`, `06-trace-list.png`, `07-trace-waterfall.png`, `08-trace-metadata.png`, `09-prompt-versions.png`, both `10-prompt-rollback-*.png` states, and `11-dashboard-overview.png`. Screenshot 06 has an opaque mask over the account area; screenshot 08 has an opaque mask over the `scope.attributes.public_key` value. The rest of each screenshot is preserved. Screenshots 07/09/10 are the latest user captures and show the personal project context. Screenshot 04 remains small and could be retaken at larger zoom.
+
+Langfuse and dashboard screenshots listed above are now present. Incident screenshots 12–14 remain pending until the official challenge is supplied. The project title is `day13-k4-l3b-2A202602841`; no API keys page is included.

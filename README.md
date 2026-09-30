@@ -141,7 +141,10 @@ python scripts/load_test.py
 python scripts/validate_logs.py
 python scripts/validate_dashboard.py
 python -m pytest -q
+python scripts/render_dashboard.py
 ```
+
+Lệnh cuối tạo `data/dashboard.html` từ log runtime trong 60 phút gần nhất; mở file này trong browser để xem sáu panel. Chạy lại workload/API nếu dashboard chưa có dữ liệu.
 
 Baseline log chưa đạt là bình thường vì các `TODO` của CP1 chưa được làm. Ghi lại kết quả baseline vào `submission/REPORT.md` trước khi sửa.
 

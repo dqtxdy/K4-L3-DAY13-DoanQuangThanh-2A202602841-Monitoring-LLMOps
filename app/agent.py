@@ -28,6 +28,24 @@ class LabAgent:
         self.model = model
         self.llm = FakeLLM(model=model)
 
+    @staticmethod
+    def _observation(client, **kwargs):
+        starter = getattr(client, "start_as_current_observation", None)
+        if callable(starter):
+            return starter(**kwargs)
+
+        class NoopObservation:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                return False
+
+            def update(self, **_):
+                return None
+
+        return NoopObservation()
+
     @observe(name="lab-agent-run", as_type="agent", capture_input=False, capture_output=False)
     def run(
         self,
@@ -40,7 +58,7 @@ class LabAgent:
         langfuse_client = get_langfuse_client()
         with propagate_attributes(
             user_id=hash_user_id(user_id),
-            session_id=session_id,
+            session_id=hash_user_id(session_id),
             tags=["lab", feature, self.model],
             trace_name="day13-agent-request",
             environment=os.getenv("APP_ENV", "dev"),
@@ -51,7 +69,32 @@ class LabAgent:
             },
         ):
             started = time.perf_counter()
-            docs = retrieve(message)
+            retrieval_started = time.perf_counter()
+            with self._observation(
+                langfuse_client,
+                as_type="retriever",
+                name="retrieval",
+                input={"query_preview": summarize_text(message)},
+                metadata={"correlation_id": correlation_id, "status": "started"},
+            ) as retrieval_observation:
+                try:
+                    docs = retrieve(message)
+                    retrieval_observation.update(
+                        output={"context_found": bool(docs), "doc_count": len(docs)},
+                        metadata={
+                            "correlation_id": correlation_id,
+                            "status": "success",
+                            "latency_ms": int((time.perf_counter() - retrieval_started) * 1000),
+                            "context_found": bool(docs),
+                        },
+                    )
+                except Exception as exc:
+                    retrieval_observation.update(
+                        level="ERROR",
+                        status_message=type(exc).__name__,
+                        metadata={"correlation_id": correlation_id, "status": "error"},
+                    )
+                    raise
             prompt = resolve_prompt(
                 langfuse_client,
                 feature=feature,
@@ -71,13 +114,49 @@ class LabAgent:
                 },
                 version=prompt.version,
             )
-            # TODO (CP2): instrument retrieve() and FakeLLM.generate() as child
-            # observations. The nested generation must receive prompt, usage and cost.
             with propagate_attributes(prompt=prompt.managed_prompt):
-                response = self.llm.generate(prompt.text)
+                generation_started = time.perf_counter()
+                with self._observation(
+                    langfuse_client,
+                    as_type="generation",
+                    name="generation",
+                    model=self.model,
+                    input={"prompt_preview": summarize_text(prompt.text, 240)},
+                    metadata={
+                        "correlation_id": correlation_id,
+                        "prompt_name": prompt.name,
+                        "prompt_label": prompt.label,
+                        "prompt_version": prompt.version,
+                        "prompt_source": prompt.source,
+                    },
+                ) as generation_observation:
+                    response = self.llm.generate(prompt.text)
+                    cost_usd = self._estimate_cost(
+                        response.usage.input_tokens, response.usage.output_tokens
+                    )
+                    generation_observation.update(
+                        output={"answer_preview": summarize_text(response.text, 240)},
+                        usage_details={
+                            "input": response.usage.input_tokens,
+                            "output": response.usage.output_tokens,
+                            "total": response.usage.input_tokens + response.usage.output_tokens,
+                        },
+                        cost_details={"total": cost_usd},
+                        metadata={
+                            "correlation_id": correlation_id,
+                            "prompt_name": prompt.name,
+                            "prompt_label": prompt.label,
+                            "prompt_version": prompt.version,
+                            "input_tokens": response.usage.input_tokens,
+                            "output_tokens": response.usage.output_tokens,
+                            "cost_usd": cost_usd,
+                            "ttft_ms": response.ttft_ms,
+                            "latency_ms": int((time.perf_counter() - generation_started) * 1000),
+                            "status": "success",
+                        },
+                    )
             quality_score = self._heuristic_quality(message, response.text, docs)
             latency_ms = int((time.perf_counter() - started) * 1000)
-            cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
 
         metrics.record_request(
             latency_ms=latency_ms,

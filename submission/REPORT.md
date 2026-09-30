@@ -7,8 +7,8 @@
 - **Họ và tên:** Đoàn Quang Thanh
 - **MSSV:** 2A202602841
 - **Lớp:** K4-L3B
-- **Repository URL:** https://github.com/dqtxdy/K4-L3-DAY13-DoanQuangThanh-2A202602841-Monitoring-LLMOpsK4-L3B-Day13-Monitoring-LLMOps
-- **Commit SHA của source, report và evidence:** `8883e00378e1701d6cc2b5250ec24eae16314147`.
+- **Repository URL:** https://github.com/dqtxdy/K4-L3-DAY13-DoanQuangThanh-2A202602841-Monitoring-LLMOps
+- **Commit SHA cuối:**
 - **Challenge ID:** `day13-k4-l3b-monitoring-llmops-v1`
 - **Tên project Langfuse cá nhân:** `day13-k4-l3b-2A202602841`
 
@@ -50,7 +50,7 @@
 - **Cách tạo/nhận và truyền correlation ID:** middleware nhận `x-request-id` hợp lệ hoặc sinh `req-<8 hex>`, bind qua structlog contextvars, trả lại `x-request-id` và `x-response-time-ms`; context được reset ở đầu/cuối request.
 - **Các metadata được ghi vào structured log:** `user_id_hash`, `session_id`, `feature`, `model`, `env`, event, correlation ID, latency/TTFT, token, cost, quality và retrieval status theo event.
 - **Cách bảo đảm PII được scrub trước khi ghi:** processor đệ quy chạy trước `JsonlFileProcessor` và JSON renderer, bao gồm string lồng trong payload và exception.
-- **Cách kiểm chứng kết quả:** 26 test pass; log validator không phát hiện PII trong 20 records của corpus cuối. Canary email, điện thoại và thẻ đã được redact trước khi ghi; trace metadata được kiểm tra không có PII thô.
+- **Cách kiểm chứng kết quả:** 26 test pass; log validator không phát hiện PII trong 20 records của corpus cuối. Canary email, điện thoại, CCCD và thẻ đã được redact trước khi ghi; trace metadata được kiểm tra không có PII thô.
 
 ## 5. Tracing và prompt versioning
 
@@ -70,6 +70,8 @@
 - **Cách tính error budget:** 100% − 99.5% = 0.5% trong 28 ngày; tương đương tối đa 50 request không đạt trên 10,000 request.
 - **Ba alert và runbook tương ứng:** P95 >3000 ms/5m, error rate >2%/5m, retrieval success <90%/5m; owner `student-2A202602841`, channel `slack`, runbook tại `docs/alerts.md`.
 
+> Ví dụ cách viết error budget: "SLO 99.5% trong 28 ngày nghĩa là error budget 0.5%. Nếu workload có 10,000 request thì tối đa 50 request được phép lỗi hoặc chậm hơn ngưỡng SLO."
+
 ## 7. Điều tra challenge
 
 - **Challenge ID:** `day13-k4-l3b-monitoring-llmops-v1`
@@ -80,6 +82,8 @@
 - **Root cause:** incident `rag_slow` làm retrieval chờ 2.5 s; lời gọi đồng bộ `run()` chặn event loop ở route async, tuần tự hóa 5 request concurrent.
 - **Fix action:** tắt incident bằng `python scripts/inject_incident.py --disable` và dispatch hàm đồng bộ `run()` qua `run_in_threadpool()`.
 - **Preventive measure:** giữ blocking SDK calls trong threadpool hoặc dùng async client; theo dõi retrieval latency và duy trì concurrency test.
+
+> Gợi ý cách viết ngắn, không thay cho evidence thực tế: "Metric cho thấy `[latency/error/cost/quality]` bất thường trong `[khoảng thời gian]`. Log line `[event]` có `correlation_id=[...]` đại diện cho request bị ảnh hưởng. Trace cùng `correlation_id` cho thấy span `[retrieval/generation/prompt/tool]` có dấu hiệu `[chậm/lỗi/token tăng]`. Root cause là `[nguyên nhân suy ra từ evidence]`. Fix action là `[hành động khôi phục]`; preventive measure là `[alert/runbook/test/guardrail để ngăn tái diễn]`."
 
 ## 8. Giải thích và tự đánh giá
 

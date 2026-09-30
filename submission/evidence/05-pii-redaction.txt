@@ -1,14 +1,16 @@
-Runtime request_received records from the final clean workload. PII in the synthetic canaries is redacted before JSONL writing.
+Runtime request_received records from four synthetic canary requests sent through the API. Values were scrubbed before JSONL serialization.
 
-{"service": "api", "payload": {"message_preview": "What is your refund policy? My email is [REDACTED_EMAIL]"}, "event": "request_received", "env": "dev", "user_id_hash": "2055254ee30a", "model": "claude-sonnet-4-5", "session_id": "s01", "feature": "qa", "correlation_id": "req-e144a49c", "level": "info", "ts": "2026-09-30T09:39:39.018070Z"}
-{"service": "api", "payload": {"message_preview": "Here is my phone [REDACTED_PHONE_VN], what should be logged?"}, "event": "request_received", "env": "dev", "user_id_hash": "64f6ec689229", "model": "claude-sonnet-4-5", "session_id": "s05", "feature": "qa", "correlation_id": "req-1208e96d", "level": "info", "ts": "2026-09-30T09:39:39.019326Z"}
-{"service": "api", "payload": {"message_preview": "What is the policy for PII and credit card [REDACTED_CREDIT_CARD]?"}, "event": "request_received", "env": "dev", "user_id_hash": "4d14d5d4f719", "model": "claude-sonnet-4-5", "session_id": "s09", "feature": "qa", "correlation_id": "req-56bc8253", "level": "info", "ts": "2026-09-30T09:39:39.179471Z"}
+{"service": "api", "payload": {"message_preview": "Canary email [REDACTED_EMAIL] should be redacted."}, "event": "request_received", "user_id_hash": "bdeec73234d1", "session_id": "synthetic-pii-1", "env": "dev", "feature": "qa", "correlation_id": "req-228afa1c", "model": "claude-sonnet-4-5", "level": "info", "ts": "2026-09-30T14:04:46.058142Z"}
+{"service": "api", "payload": {"message_preview": "Canary phone [REDACTED_PHONE_VN] should be redacted."}, "event": "request_received", "user_id_hash": "f5dae8ca8cf7", "session_id": "synthetic-pii-2", "env": "dev", "feature": "qa", "correlation_id": "req-bfbb87a1", "model": "claude-sonnet-4-5", "level": "info", "ts": "2026-09-30T14:04:46.212281Z"}
+{"service": "api", "payload": {"message_preview": "Canary CCCD [REDACTED_CCCD] should be redacted."}, "event": "request_received", "user_id_hash": "3ee7be106923", "session_id": "synthetic-pii-3", "env": "dev", "feature": "qa", "correlation_id": "req-565699d7", "model": "claude-sonnet-4-5", "level": "info", "ts": "2026-09-30T14:04:46.366244Z"}
+{"service": "api", "payload": {"message_preview": "Canary payment card [REDACTED_CREDIT_CARD]should be redacted."}, "event": "request_received", "user_id_hash": "9592dad9c827", "session_id": "synthetic-pii-4", "env": "dev", "feature": "qa", "correlation_id": "req-bc2da0fe", "model": "claude-sonnet-4-5", "level": "info", "ts": "2026-09-30T14:04:46.520492Z"}
 
 $ python scripts/validate_logs.py
-Total log records analyzed: 20
+--- Lab Verification Results ---
+Total log records analyzed: 9
 Records with missing required fields: 0
 Records with missing enrichment (context): 0
-Unique correlation IDs found: 10
+Unique correlation IDs found: 4
 Potential PII leaks detected: 0
 
 --- Grading Scorecard (Estimates) ---

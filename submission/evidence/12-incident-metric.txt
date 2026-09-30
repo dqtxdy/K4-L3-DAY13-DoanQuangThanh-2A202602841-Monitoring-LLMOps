@@ -4,7 +4,6 @@ Challenge ID: day13-k4-l3b-monitoring-llmops-v1 (cohort K4; challenge file not i
 Incident: rag_slow; affected feature: monitoring
 Challenge latency threshold: 2000 ms
 Window UTC: 2026-09-30T05:13:51.180652+00:00 to 2026-09-30T05:14:04.957257+00:00
-Window Asia/Ho_Chi_Minh: 2026-09-30T12:13:51.180652+00:00 to 2026-09-30T12:14:04.957257+00:00
 Requests: 5 received, 5 HTTP-success response events, 5 distinct correlation IDs; 5/5 measured app latencies exceed challenge threshold.
 Application response latency ms: min=2651, mean=2734.8, p50=2652.0, p95=3067.0, p99=3067.0, max=3067.
 In-memory API /metrics response (captured after this workload):

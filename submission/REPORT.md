@@ -8,7 +8,7 @@
 - **MSSV:** 2A202602841
 - **Lớp:** K4-L3B
 - **Repository URL:** https://github.com/dqtxdy/K4-L3-DAY13-DoanQuangThanh-2A202602841-Monitoring-LLMOpsK4-L3B-Day13-Monitoring-LLMOps
-- **Commit SHA cuối:** Chưa có commit chứa audit hiện tại.
+- **Commit SHA của source, report và evidence:** `8883e00378e1701d6cc2b5250ec24eae16314147`.
 - **Challenge ID:** `day13-k4-l3b-monitoring-llmops-v1`
 - **Tên project Langfuse cá nhân:** `day13-k4-l3b-2A202602841`
 

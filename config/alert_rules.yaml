@@ -4,22 +4,22 @@ alerts:
     condition: 'p95(response_sent.latency_ms) > 3000 ms over 5m'
     duration: 5m
     type: symptom-based
-    channel: '#k4-l3b-alerts'
-    owner: student-repository-owner
+    channel: slack
+    owner: student-2A202602841
     runbook: docs/alerts.md#alert-1
-  - name: HighRequestErrorRate
+  - name: HighErrorRate
     severity: critical
     condition: 'request_failed / request_received > 2% over 5m'
     duration: 5m
     type: symptom-based
-    channel: '#k4-l3b-alerts'
-    owner: student-repository-owner
+    channel: slack
+    owner: student-2A202602841
     runbook: docs/alerts.md#alert-2
   - name: LowRetrievalSuccess
     severity: warning
     condition: 'retrieval tool_success rate < 90% over 5m'
     duration: 5m
     type: symptom-based
-    channel: '#k4-l3b-alerts'
-    owner: student-repository-owner
+    channel: slack
+    owner: student-2A202602841
     runbook: docs/alerts.md#alert-3

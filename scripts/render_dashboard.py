@@ -54,10 +54,10 @@ def build_html(records: list[dict], minutes: int) -> str:
 
     panels = [
         ("Latency · ms", f"P50 {display(percentile(latencies, 50), ' ms')} · P95 {display(percentile(latencies, 95), ' ms')} · P99 {display(percentile(latencies, 99), ' ms')} · TTFT P95 {display(percentile(ttft, 95), ' ms')}", "SLO threshold: P95 ≤ 3000 ms"),
-        ("Traffic · requests/min", f"{per_minute:.2f} requests/min · {len(received)} requests", "Source event: request_received"),
+        ("Traffic · requests/min", f"{per_minute:.2f} requests/min · {len(received)} requests", "Threshold: ≥ 1 request/min"),
         ("Errors / retrieval · percent", f"Error rate {display(error_rate, '%')} · Retrieval success {display(retrieval_rate, '%')}", "Thresholds: errors ≤ 2% · retrieval success ≥ 90%"),
-        ("Cost · USD", f"${sum(costs):.6f} total · ${sum(costs) / minutes:.6f}/min", "Source field: response_sent.cost_usd"),
-        ("Tokens · tokens", f"Input {token_in:,} · Output {token_out:,}", "Source fields: tokens_in, tokens_out"),
+        ("Cost · USD", f"${sum(costs):.6f} total · ${sum(costs) / minutes:.6f}/min", "Threshold: ≤ $2.5 total"),
+        ("Tokens · tokens", f"Input {token_in:,} · Output {token_out:,}", "Threshold: ≤ 50,000 tokens"),
         ("Quality proxy · score 0–1", f"Mean {display(sum(scores) / len(scores) if scores else None)}", "Threshold: mean ≥ 0.75"),
     ]
     cards = "\n".join(

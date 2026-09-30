@@ -50,8 +50,12 @@ The following files contain actual local test/log output or records queried from
 09-prompt-versions.txt
 10-prompt-rollback.txt
 11-dashboard-runtime.txt
+12-incident-metric.txt
+13-incident-log.jsonl
+14-incident-trace.txt
+15-incident-recovery.txt
 ```
 
 Screenshots currently present: `04-structured-log.png`, `05-pii-redaction.png`, `06-trace-list.png`, `07-trace-waterfall.png`, `08-trace-metadata.png`, `09-prompt-versions.png`, both `10-prompt-rollback-*.png` states, and `11-dashboard-overview.png`. Screenshot 06 has an opaque mask over the account area; screenshot 08 has an opaque mask over the `scope.attributes.public_key` value. The rest of each screenshot is preserved. Screenshots 07/09/10 are the latest user captures and show the personal project context. Screenshot 04 remains small and could be retaken at larger zoom.
 
-Langfuse and dashboard screenshots listed above are now present. Incident screenshots 12–14 remain pending until the official challenge is supplied. The project title is `day13-k4-l3b-2A202602841`; no API keys page is included.
+Langfuse and dashboard screenshots 04–11 are present. Official challenge runtime text evidence 12–15 is now captured; screenshots 12–14 remain to be saved: 12 from the rendered runtime dashboard, 13 from the sanitized response log, and 14 from the Langfuse trace tree for the matching correlation ID. The project title is `day13-k4-l3b-2A202602841`; no API keys page is included. Incident trace text excludes input/output previews and resource-level key attributes.

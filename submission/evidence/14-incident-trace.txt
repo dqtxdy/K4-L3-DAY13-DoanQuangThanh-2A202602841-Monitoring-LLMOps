@@ -1,0 +1,9 @@
+Official challenge trace evidence (Langfuse Observations API v2; input/output and non-lab resource attributes excluded)
+Project: day13-k4-l3b-2A202602841
+Window UTC: 2026-09-30 05:13:51–05:13:54; Asia/Ho_Chi_Minh: 2026-09-30 12:13:51–12:13:54
+Correlation ID: req-68327b43 (matches submission/evidence/13-incident-log.jsonl)
+Trace ID: 9df0c93f6219d8ee11b7247068523f44
+Root observation: name=lab-agent-run; id=d32adfc17f2e9cf6; duration_s=3.068; metadata={'correlation_id': 'req-68327b43', 'feature': 'monitoring', 'model': 'claude-sonnet-4-5', 'doc_count': 1, 'prompt_name': 'day13-chat', 'prompt_label': 'production', 'prompt_version': 1, 'prompt_source': 'langfuse'}
+Retrieval child: id=86c806cd0cb4c5f2; parent=d32adfc17f2e9cf6; duration_s=2.501; metadata={'correlation_id': 'req-68327b43', 'status': 'success', 'latency_ms': 2500, 'context_found': True, 'feature': 'monitoring'}
+Generation child: id=039f37f9feffb8e7; parent=d32adfc17f2e9cf6; duration_s=0.15; model=claude-sonnet-4-5; prompt_name=day13-chat; prompt_version=1; usage={'input': 35, 'output': 99, 'total': 134}; cost={'total': 0.00159}; metadata={'correlation_id': 'req-68327b43', 'status': 'success', 'prompt_name': 'day13-chat', 'prompt_label': 'production', 'prompt_version': 1, 'prompt_source': 'langfuse', 'model': 'claude-sonnet-4-5', 'input_tokens': 35, 'output_tokens': 99, 'cost_usd': 0.00159, 'ttft_ms': 50, 'latency_ms': 150}
+Finding: retrieval occupied 2.501 s; generation occupied 0.150 s. Retrieval is the dominant span and correlates to the 3067 ms response event.

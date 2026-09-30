@@ -3,11 +3,15 @@ from __future__ import annotations
 import json
 import asyncio
 import re
+import threading
+import time
 from pathlib import Path
+from types import SimpleNamespace
 
 import httpx
 
 from app import logging_config
+from app import main as main_module
 from app.main import app
 
 
@@ -80,3 +84,50 @@ def test_request_id_is_echoed_or_regenerated_without_context_leak(
     events = [json.loads(line) for line in log_path.read_text(encoding="utf-8").splitlines()]
     request_ids = [event["correlation_id"] for event in events if event["event"] == "request_received"]
     assert request_ids == ["client-trace-42", regenerated.headers["x-request-id"]]
+
+
+def test_blocking_agent_runs_off_event_loop_under_concurrency(monkeypatch, tmp_path: Path) -> None:
+    log_path = tmp_path / "logs.jsonl"
+    monkeypatch.setattr(logging_config, "LOG_PATH", log_path)
+    active = 0
+    max_active = 0
+    lock = threading.Lock()
+
+    def slow_agent(**kwargs):
+        nonlocal active, max_active
+        with lock:
+            active += 1
+            max_active = max(max_active, active)
+        time.sleep(0.08)
+        with lock:
+            active -= 1
+        return SimpleNamespace(
+            answer="Test response",
+            latency_ms=80,
+            ttft_ms=10,
+            tokens_in=20,
+            tokens_out=10,
+            cost_usd=0.001,
+            quality_score=0.9,
+        )
+
+    monkeypatch.setattr(main_module.agent, "run", slow_agent)
+    payload = {
+        "user_id": "student-concurrency",
+        "session_id": "session-concurrency",
+        "feature": "qa",
+        "message": "Check concurrent request handling",
+    }
+
+    async def send_requests() -> list[httpx.Response]:
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            return await asyncio.gather(
+                *(client.post("/chat", json=payload) for _ in range(5))
+            )
+
+    responses = asyncio.run(send_requests())
+    assert all(response.status_code == 200 for response in responses)
+    assert len({response.headers["x-request-id"] for response in responses}) == 5
+    assert max_active >= 2
